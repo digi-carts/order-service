@@ -11,6 +11,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+/**
+ * REST controller exposing order HTTP APIs for <em>order-service</em>.
+ */
 @RestController
 @RequestMapping("/orders")
 public class OrderController {

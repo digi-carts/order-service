@@ -9,6 +9,9 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * JPA entity mapped in this service schema (Order).
+ */
 @Entity
 @Table(name = "orders", schema = "order_svc")
 @EntityListeners(AuditingEntityListener.class)

@@ -10,6 +10,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+/**
+ * REST controller exposing return HTTP APIs for <em>order-service</em>.
+ */
 @RestController
 @RequestMapping("/returns")
 public class ReturnController {
