@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+    <changeSet id="001-create-schema" author="order-service">
+        <sql>CREATE SCHEMA IF NOT EXISTS order_svc</sql>
+    </changeSet>
+
+    <changeSet id="002-create-orders-table" author="order-service">
+        <createTable tableName="orders" schemaName="order_svc">
+            <column name="id" type="UUID" defaultValueComputed="gen_random_uuid()">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="store_id" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_id" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="status" type="VARCHAR(50)" defaultValue="PENDING">
+                <constraints nullable="false"/>
+            </column>
+            <column name="payment_method" type="VARCHAR(100)" defaultValue="ONLINE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="total" type="DOUBLE PRECISION">
+                <constraints nullable="false"/>
+            </column>
+            <column name="shipping_address" type="JSONB">
+                <constraints nullable="false"/>
+            </column>
+            <column name="tracking_id" type="VARCHAR(255)"/>
+            <column name="courier_provider" type="VARCHAR(255)"/>
+            <column name="awb_number" type="VARCHAR(255)"/>
+            <column name="label_url" type="TEXT"/>
+            <column name="tracking_status" type="VARCHAR(255)"/>
+            <column name="preferred_courier_id" type="VARCHAR(255)"/>
+            <column name="preferred_courier_name" type="VARCHAR(255)"/>
+            <column name="admin_comment" type="TEXT"/>
+            <column name="delivered_at" type="TIMESTAMPTZ"/>
+            <column name="created_at" type="TIMESTAMPTZ" defaultValueComputed="NOW()">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_at" type="TIMESTAMPTZ" defaultValueComputed="NOW()">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <createIndex indexName="idx_orders_store_id" tableName="orders" schemaName="order_svc">
+            <column name="store_id"/>
+        </createIndex>
+        <createIndex indexName="idx_orders_user_id" tableName="orders" schemaName="order_svc">
+            <column name="user_id"/>
+        </createIndex>
+        <createIndex indexName="idx_orders_status" tableName="orders" schemaName="order_svc">
+            <column name="status"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet id="003-create-order-items-table" author="order-service">
+        <createTable tableName="order_items" schemaName="order_svc">
+            <column name="id" type="UUID" defaultValueComputed="gen_random_uuid()">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="order_id" type="UUID">
+                <constraints nullable="false" foreignKeyName="fk_order_items_order"
+                    references="order_svc.orders(id)" deleteCascade="true"/>
+            </column>
+            <column name="product_id" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="product_name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="qty" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="price_at_order" type="DOUBLE PRECISION">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <createIndex indexName="idx_order_items_order_id" tableName="order_items" schemaName="order_svc">
+            <column name="order_id"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet id="004-create-returns-table" author="order-service">
+        <createTable tableName="returns" schemaName="order_svc">
+            <column name="id" type="UUID" defaultValueComputed="gen_random_uuid()">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="store_id" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_id" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="order_id" type="UUID">
+                <constraints nullable="false" foreignKeyName="fk_returns_order"
+                    references="order_svc.orders(id)"/>
+            </column>
+            <column name="status" type="VARCHAR(50)" defaultValue="REQUESTED">
+                <constraints nullable="false"/>
+            </column>
+            <column name="reason" type="TEXT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="comment" type="TEXT"/>
+            <column name="admin_comment" type="TEXT"/>
+            <column name="refund_method" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="refund_status" type="VARCHAR(50)" defaultValue="PENDING">
+                <constraints nullable="false"/>
+            </column>
+            <column name="refund_amount" type="DOUBLE PRECISION" defaultValueNumeric="0">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_at" type="TIMESTAMPTZ" defaultValueComputed="NOW()">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_at" type="TIMESTAMPTZ" defaultValueComputed="NOW()">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <createIndex indexName="idx_returns_store_id" tableName="returns" schemaName="order_svc">
+            <column name="store_id"/>
+        </createIndex>
+        <createIndex indexName="idx_returns_user_id" tableName="returns" schemaName="order_svc">
+            <column name="user_id"/>
+        </createIndex>
+        <createIndex indexName="idx_returns_order_id" tableName="returns" schemaName="order_svc">
+            <column name="order_id"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet id="005-create-return-items-table" author="order-service">
+        <createTable tableName="return_items" schemaName="order_svc">
+            <column name="id" type="UUID" defaultValueComputed="gen_random_uuid()">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="return_id" type="UUID">
+                <constraints nullable="false" foreignKeyName="fk_return_items_return"
+                    references="order_svc.returns(id)" deleteCascade="true"/>
+            </column>
+            <column name="order_item_id" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="product_id" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="product_name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="qty" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="price_at_order" type="DOUBLE PRECISION">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <createIndex indexName="idx_return_items_return_id" tableName="return_items" schemaName="order_svc">
+            <column name="return_id"/>
+        </createIndex>
+    </changeSet>
+
+</databaseChangeLog>
