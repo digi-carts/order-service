@@ -15,7 +15,7 @@ import java.util.List;
  * REST controller exposing order HTTP APIs for <em>order-service</em>.
  */
 @RestController
-@RequestMapping("/orders")
+@RequestMapping("/api/orders")
 public class OrderController {
 
     private final OrderService orderService;

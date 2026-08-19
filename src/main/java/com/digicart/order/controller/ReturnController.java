@@ -14,7 +14,7 @@ import java.util.List;
  * REST controller exposing return HTTP APIs for <em>order-service</em>.
  */
 @RestController
-@RequestMapping("/returns")
+@RequestMapping("/api/returns")
 public class ReturnController {
 
     private final ReturnService returnService;
