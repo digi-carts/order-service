@@ -3,6 +3,9 @@ package com.digicart.order.dto;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
+/**
+ * Request/response DTO: Return Item Request.
+ */
 public class ReturnItemRequest {
 
     @NotBlank

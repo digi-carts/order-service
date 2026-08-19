@@ -2,6 +2,9 @@ package com.digicart.order.entity;
 
 import jakarta.persistence.*;
 
+/**
+ * JPA entity mapped in this service schema (Return Item).
+ */
 @Entity
 @Table(name = "return_items", schema = "order_svc")
 public class ReturnItem {

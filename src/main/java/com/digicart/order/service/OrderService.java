@@ -12,6 +12,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+/**
+ * Application service implementing order use cases for <em>order-service</em>.
+ */
 @Service
 public class OrderService {
 

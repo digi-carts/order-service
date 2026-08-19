@@ -7,6 +7,9 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+/**
+ * Spring Data JPA repository for order  persistence.
+ */
 @Repository
 public interface OrderRepository extends JpaRepository<Order, String> {
     List<Order> findByStoreId(String storeId);

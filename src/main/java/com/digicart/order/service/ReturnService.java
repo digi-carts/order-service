@@ -14,6 +14,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+/**
+ * Application service implementing return use cases for <em>order-service</em>.
+ */
 @Service
 public class ReturnService {
 

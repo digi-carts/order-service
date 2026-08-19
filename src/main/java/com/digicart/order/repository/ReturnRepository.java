@@ -7,6 +7,9 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+/**
+ * Spring Data JPA repository for return  persistence.
+ */
 @Repository
 public interface ReturnRepository extends JpaRepository<Return, String> {
     List<Return> findByStoreId(String storeId);

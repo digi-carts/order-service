@@ -6,6 +6,9 @@ import jakarta.validation.constraints.NotNull;
 
 import java.util.List;
 
+/**
+ * Request/response DTO: Return Request.
+ */
 public class ReturnRequest {
 
     @NotBlank
