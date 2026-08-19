@@ -20,31 +20,71 @@ public class OrderService {
 
     private final OrderRepository orderRepository;
 
+    /**
+     * Creates a new {@code OrderService}.
+     *
+     * @param orderRepository order repository collaborator
+     */
     public OrderService(OrderRepository orderRepository) {
         this.orderRepository = orderRepository;
     }
 
+    /**
+     * Finds all.
+     * @return matching records
+     */
     public List<Order> findAll() {
         return orderRepository.findAll();
     }
 
+    /**
+     * Finds by id.
+     *
+     * @param id resource identifier
+     * @return the order
+     */
     public Order findById(String id) {
         return orderRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Order not found: " + id));
     }
 
+    /**
+     * Finds by store id.
+     *
+     * @param storeId store (tenant) identifier
+     * @return matching records
+     */
     public List<Order> findByStoreId(String storeId) {
         return orderRepository.findByStoreId(storeId);
     }
 
+    /**
+     * Finds by user id.
+     *
+     * @param userId caller user id from the gateway ({@code X-User-Id})
+     * @return matching records
+     */
     public List<Order> findByUserId(String userId) {
         return orderRepository.findByUserId(userId);
     }
 
+    /**
+     * Finds by store id and status.
+     *
+     * @param storeId store (tenant) identifier
+     * @param status status
+     * @return matching records
+     */
     public List<Order> findByStoreIdAndStatus(String storeId, OrderStatus status) {
         return orderRepository.findByStoreIdAndStatus(storeId, status);
     }
 
+    /**
+     * Creates a new record.
+     *
+     * @param req request payload
+     * @return the order
+     */
     @Transactional
     public Order create(OrderRequest req) {
         Order order = new Order();
@@ -79,6 +119,13 @@ public class OrderService {
         return orderRepository.save(order);
     }
 
+    /**
+     * Updates an existing record.
+     *
+     * @param id resource identifier
+     * @param req request payload
+     * @return the order
+     */
     @Transactional
     public Order update(String id, OrderRequest req) {
         Order order = findById(id);
@@ -100,6 +147,11 @@ public class OrderService {
         return orderRepository.save(order);
     }
 
+    /**
+     * Deletes the record.
+     *
+     * @param id resource identifier
+     */
     public void delete(String id) {
         findById(id);
         orderRepository.deleteById(id);

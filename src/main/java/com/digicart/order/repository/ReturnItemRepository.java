@@ -11,5 +11,11 @@ import java.util.List;
  */
 @Repository
 public interface ReturnItemRepository extends JpaRepository<ReturnItem, String> {
+    /**
+     * Finds by return request id.
+     *
+     * @param returnId return id
+     * @return matching records
+     */
     List<ReturnItem> findByReturnRequest_Id(String returnId);
 }

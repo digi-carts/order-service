@@ -23,32 +23,72 @@ public class ReturnService {
     private final ReturnRepository returnRepository;
     private final OrderRepository orderRepository;
 
+    /**
+     * Creates a new {@code ReturnService}.
+     *
+     * @param returnRepository return repository collaborator
+     * @param orderRepository order repository collaborator
+     */
     public ReturnService(ReturnRepository returnRepository, OrderRepository orderRepository) {
         this.returnRepository = returnRepository;
         this.orderRepository = orderRepository;
     }
 
+    /**
+     * Finds all.
+     * @return matching records
+     */
     public List<Return> findAll() {
         return returnRepository.findAll();
     }
 
+    /**
+     * Finds by id.
+     *
+     * @param id resource identifier
+     * @return the return
+     */
     public Return findById(String id) {
         return returnRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Return not found: " + id));
     }
 
+    /**
+     * Finds by store id.
+     *
+     * @param storeId store (tenant) identifier
+     * @return matching records
+     */
     public List<Return> findByStoreId(String storeId) {
         return returnRepository.findByStoreId(storeId);
     }
 
+    /**
+     * Finds by user id.
+     *
+     * @param userId caller user id from the gateway ({@code X-User-Id})
+     * @return matching records
+     */
     public List<Return> findByUserId(String userId) {
         return returnRepository.findByUserId(userId);
     }
 
+    /**
+     * Finds by order id.
+     *
+     * @param orderId order identifier
+     * @return matching records
+     */
     public List<Return> findByOrderId(String orderId) {
         return returnRepository.findByOrder_Id(orderId);
     }
 
+    /**
+     * Creates a new record.
+     *
+     * @param req request payload
+     * @return the return
+     */
     @Transactional
     public Return create(ReturnRequest req) {
         Order order = orderRepository.findById(req.getOrderId())
@@ -82,6 +122,13 @@ public class ReturnService {
         return returnRepository.save(ret);
     }
 
+    /**
+     * Updates an existing record.
+     *
+     * @param id resource identifier
+     * @param req request payload
+     * @return the return
+     */
     @Transactional
     public Return update(String id, ReturnRequest req) {
         Return ret = findById(id);
@@ -97,6 +144,11 @@ public class ReturnService {
         return returnRepository.save(ret);
     }
 
+    /**
+     * Deletes the record.
+     *
+     * @param id resource identifier
+     */
     public void delete(String id) {
         findById(id);
         returnRepository.deleteById(id);

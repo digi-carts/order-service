@@ -104,3 +104,7 @@ mvn spring-boot:run
 - [shipping-service](https://github.com/digi-carts/shipping-service/blob/stage/doc/README.md)
 - [billing-service](https://github.com/digi-carts/billing-service/blob/stage/doc/README.md)
 - [storefront](https://github.com/digi-carts/storefront/blob/stage/doc/README.md)
+
+## REST API reference
+
+See [api.md](api.md) for every HTTP endpoint generated from Spring controllers.
