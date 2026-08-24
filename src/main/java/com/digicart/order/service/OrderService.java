@@ -10,7 +10,9 @@ import com.digicart.order.repository.OrderRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Application service implementing order use cases for <em>order-service</em>.
@@ -103,5 +105,15 @@ public class OrderService {
     public void delete(String id) {
         findById(id);
         orderRepository.deleteById(id);
+    }
+
+    public List<Map<String, Object>> getStatsByStore() {
+        return orderRepository.getStatsByStore().stream().map(row -> {
+            Map<String, Object> m = new LinkedHashMap<>();
+            m.put("storeId", row[0]);
+            m.put("orders", row[1]);
+            m.put("revenue", row[2] != null ? row[2] : 0.0);
+            return m;
+        }).toList();
     }
 }
