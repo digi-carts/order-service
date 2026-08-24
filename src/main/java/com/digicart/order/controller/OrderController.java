@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * REST controller exposing order HTTP APIs for <em>order-service</em>.
@@ -29,7 +30,7 @@ public class OrderController {
             @RequestParam(required = false) String storeId,
             @RequestParam(required = false) String userId,
             @RequestParam(required = false) OrderStatus status,
-            @RequestHeader(value = "X-User-Id", required = false) String userId_header,
+            @RequestHeader(value = "X-User-Id", required = false) String userIdHeader,
             @RequestHeader(value = "X-User-Role", required = false) String role) {
         if (storeId != null && status != null) {
             return ResponseEntity.ok(orderService.findByStoreIdAndStatus(storeId, status));
@@ -66,6 +67,11 @@ public class OrderController {
             @RequestHeader(value = "X-User-Id", required = false) String userId,
             @RequestHeader(value = "X-User-Role", required = false) String role) {
         return ResponseEntity.ok(orderService.update(id, request));
+    }
+
+    @GetMapping("/stats/by-store")
+    public ResponseEntity<Map<String, Object>> getStatsByStore() {
+        return ResponseEntity.ok(Map.of("stores", orderService.getStatsByStore()));
     }
 
     @DeleteMapping("/{id}")
