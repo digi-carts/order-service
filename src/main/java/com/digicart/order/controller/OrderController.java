@@ -64,7 +64,11 @@ public class OrderController {
     }
 
     @GetMapping("/stats/by-store")
-    public ResponseEntity<Map<String, Object>> getStatsByStore() {
+    public ResponseEntity<?> getStatsByStore(
+            @RequestHeader(value = "X-User-Role", required = false) String role) {
+        if (!"superadmin".equalsIgnoreCase(role)) {
+            return ResponseEntity.status(403).body(Map.of("error", "Forbidden"));
+        }
         return ResponseEntity.ok(Map.of("stores", orderService.getStatsByStore()));
     }
 
