@@ -1,5 +1,7 @@
 package com.digicart.order.service;
 
+import com.digicart.order.dto.CheckoutItemRequest;
+import com.digicart.order.dto.CheckoutRequest;
 import com.digicart.order.dto.OrderItemRequest;
 import com.digicart.order.dto.OrderRequest;
 import com.digicart.order.entity.Order;
@@ -10,7 +12,11 @@ import com.digicart.order.repository.OrderRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Application service implementing order use cases for <em>order-service</em>.
@@ -25,7 +31,7 @@ public class OrderService {
     }
 
     public List<Order> findAll() {
-        return orderRepository.findAll();
+        return orderRepository.findAllWithItems();
     }
 
     public Order findById(String id) {
@@ -103,5 +109,81 @@ public class OrderService {
     public void delete(String id) {
         findById(id);
         orderRepository.deleteById(id);
+    }
+
+    public List<Map<String, Object>> getStatsByStore() {
+        return orderRepository.getStatsByStore().stream().map(row -> {
+            Map<String, Object> m = new LinkedHashMap<>();
+            m.put("storeId", row[0]);
+            m.put("orders", row[1]);
+            m.put("revenue", row[2] != null ? row[2] : 0.0);
+            return m;
+        }).toList();
+    }
+
+    public Map<String, Object> getAnalytics(int days) {
+        Instant cutoff = Instant.now().minus(days, ChronoUnit.DAYS);
+        List<Object[]> results = orderRepository.getAnalytics(cutoff);
+        if (results.isEmpty() || results.get(0)[0] == null) {
+            return Map.of("totalOrders", 0, "totalRevenue", 0.0, "avgOrderValue", 0.0, "period", days + "d");
+        }
+        Object[] row = results.get(0);
+        long totalOrders = ((Number) row[0]).longValue();
+        double totalRevenue = row[1] != null ? ((Number) row[1]).doubleValue() : 0.0;
+        double avgOrderValue = row[2] != null ? ((Number) row[2]).doubleValue() : 0.0;
+        Map<String, Object> m = new LinkedHashMap<>();
+        m.put("totalOrders", totalOrders);
+        m.put("totalRevenue", totalRevenue);
+        m.put("avgOrderValue", avgOrderValue);
+        m.put("period", days + "d");
+        return m;
+    }
+
+    public Map<String, Object> getActiveCount(String storeId) {
+        List<OrderStatus> activeStatuses = List.of(OrderStatus.CONFIRMED, OrderStatus.PROCESSING, OrderStatus.SHIPPED);
+        long count = orderRepository.countActiveByStoreId(storeId, activeStatuses);
+        return Map.of("count", count);
+    }
+
+    @Transactional
+    public Order checkout(CheckoutRequest req, String userId) {
+        double total = req.getCartItems().stream()
+                .mapToDouble(item -> item.getPrice() * item.getQty())
+                .sum();
+        Order order = new Order();
+        order.setStoreId(req.getStoreId());
+        order.setUserId(userId);
+        order.setTotal(total);
+        order.setShippingAddress(req.getAddressId());
+        order.setPaymentMethod(req.getPaymentMethod());
+        order.setStatus(OrderStatus.PENDING);
+        for (CheckoutItemRequest item : req.getCartItems()) {
+            OrderItem orderItem = new OrderItem();
+            orderItem.setOrder(order);
+            orderItem.setProductId(item.getProductId());
+            orderItem.setProductName(item.getProductName() != null ? item.getProductName() : item.getProductId());
+            orderItem.setQty(item.getQty());
+            orderItem.setPriceAtOrder(item.getPrice());
+            order.getItems().add(orderItem);
+        }
+        return orderRepository.save(order);
+    }
+
+    @Transactional
+    public Order applyCustomerAction(String id, String action) {
+        Order order = findById(id);
+        switch (action.toUpperCase()) {
+            case "CANCEL" -> order.setStatus(OrderStatus.CANCELLED);
+            case "CONFIRM_DELIVERY" -> order.setStatus(OrderStatus.DELIVERED);
+            default -> throw new IllegalArgumentException("Unknown action: " + action);
+        }
+        return orderRepository.save(order);
+    }
+
+    @Transactional
+    public Order updateStatus(String id, String status, String comment) {
+        Order order = findById(id);
+        order.setStatus(OrderStatus.valueOf(status.toUpperCase()));
+        return orderRepository.save(order);
     }
 }

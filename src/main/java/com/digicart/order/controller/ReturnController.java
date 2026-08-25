@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * REST controller exposing return HTTP APIs for <em>order-service</em>.
@@ -74,5 +75,14 @@ public class ReturnController {
             @RequestHeader(value = "X-User-Role", required = false) String role) {
         returnService.delete(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/{id}/status")
+    public ResponseEntity<Return> updateStatus(
+            @PathVariable String id,
+            @RequestBody Map<String, String> body,
+            @RequestHeader(value = "X-User-Id", required = false) String userId,
+            @RequestHeader(value = "X-User-Role", required = false) String role) {
+        return ResponseEntity.ok(returnService.updateStatus(id, body.get("status"), body.get("comment")));
     }
 }
