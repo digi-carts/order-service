@@ -7,11 +7,9 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.Instant;
 import java.util.List;
 
-/**
- * Spring Data JPA repository for order  persistence.
- */
 @Repository
 public interface OrderRepository extends JpaRepository<Order, String> {
 
@@ -32,4 +30,10 @@ public interface OrderRepository extends JpaRepository<Order, String> {
 
     @Query("SELECT o.storeId, COUNT(o), SUM(o.total) FROM Order o GROUP BY o.storeId")
     List<Object[]> getStatsByStore();
+
+    @Query("SELECT COUNT(o), SUM(o.total), AVG(o.total) FROM Order o WHERE o.createdAt >= :cutoff")
+    List<Object[]> getAnalytics(@Param("cutoff") Instant cutoff);
+
+    @Query("SELECT COUNT(o) FROM Order o WHERE o.storeId = :storeId AND o.status IN :statuses")
+    long countActiveByStoreId(@Param("storeId") String storeId, @Param("statuses") List<OrderStatus> statuses);
 }
