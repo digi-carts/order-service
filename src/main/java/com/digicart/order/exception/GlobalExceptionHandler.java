@@ -34,6 +34,10 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, Object>> handleGeneric(Exception ex) {
+        Throwable cause = ex.getCause();
+        if (cause instanceof EntityNotFoundException enfe) {
+            return buildResponse(HttpStatus.NOT_FOUND, enfe.getMessage());
+        }
         return buildResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Internal server error");
     }
 
