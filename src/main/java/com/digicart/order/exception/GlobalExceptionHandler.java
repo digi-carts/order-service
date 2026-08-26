@@ -41,7 +41,8 @@ public class GlobalExceptionHandler {
             }
             t = t.getCause();
         }
-        return buildResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Internal server error");
+        String info = ex == null ? "null" : (ex.getClass().getName() + ":" + ex.getMessage());
+        return buildResponse(HttpStatus.INTERNAL_SERVER_ERROR, "ERR:" + info);
     }
 
     private ResponseEntity<Map<String, Object>> buildResponse(HttpStatus status, String message) {
