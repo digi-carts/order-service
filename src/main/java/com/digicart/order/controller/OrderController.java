@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 
 /**
  * REST controller exposing order HTTP APIs for <em>order-service</em>.
@@ -113,12 +114,16 @@ public class OrderController {
     }
 
     @PatchMapping("/{id}/status")
-    public ResponseEntity<Order> updateStatus(
+    public ResponseEntity<?> updateStatus(
             @PathVariable String id,
             @RequestBody Map<String, String> body,
             @RequestHeader(value = "X-User-Id", required = false) String userId,
             @RequestHeader(value = "X-User-Role", required = false) String role) {
-        return ResponseEntity.ok(orderService.updateStatus(id, body.get("status"), body.get("comment")));
+        try {
+            return ResponseEntity.ok(orderService.updateStatus(id, body.get("status"), body.get("comment")));
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.status(404).body(Map.of("error", "Order not found"));
+        }
     }
 
     @PostMapping("/{id}/return")
