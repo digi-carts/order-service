@@ -86,7 +86,7 @@ public class ReturnController {
             @RequestHeader(value = "X-User-Role", required = false) String role) {
         try {
             return ResponseEntity.ok(returnService.updateStatus(id, body.get("status"), body.get("comment")));
-        } catch (NoSuchElementException e) {
+        } catch (NoSuchElementException | com.digicart.order.exception.EntityNotFoundException e) {
             return ResponseEntity.status(404).body(Map.of("error", "Return not found"));
         }
     }
