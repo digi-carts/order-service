@@ -2,6 +2,8 @@ package com.digicart.order.entity;
 
 import jakarta.persistence.*;
 
+import java.util.UUID;
+
 /**
  * JPA entity mapped in this service schema (Return Item).
  */
@@ -11,7 +13,7 @@ public class ReturnItem {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private String id;
+    private UUID id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "return_id", nullable = false)
@@ -32,8 +34,8 @@ public class ReturnItem {
     @Column(name = "price_at_order", nullable = false)
     private Double priceAtOrder;
 
-    public String getId() { return id; }
-    public void setId(String id) { this.id = id; }
+    public UUID getId() { return id; }
+    public void setId(UUID id) { this.id = id; }
     public Return getReturnRequest() { return returnRequest; }
     public void setReturnRequest(Return returnRequest) { this.returnRequest = returnRequest; }
     public String getOrderItemId() { return orderItemId; }
