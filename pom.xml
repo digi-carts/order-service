@@ -13,7 +13,7 @@
 
     <groupId>com.digicart</groupId>
     <artifactId>order-service</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>1.0.0</version>
     <name>order-service</name>
     <description>digi-carts order service</description>
 
