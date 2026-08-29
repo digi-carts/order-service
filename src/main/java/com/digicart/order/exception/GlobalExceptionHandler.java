@@ -11,6 +11,9 @@ import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Maps domain and validation failures to HTTP error payloads.
+ */
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -24,8 +27,20 @@ public class GlobalExceptionHandler {
         return buildResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
     }
 
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<Map<String, Object>> handleBadRequest(IllegalArgumentException ex) {
+        return buildResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, Object>> handleGeneric(Exception ex) {
+        Throwable t = ex;
+        while (t != null) {
+            if (t instanceof EntityNotFoundException enfe) {
+                return buildResponse(HttpStatus.NOT_FOUND, enfe.getMessage());
+            }
+            t = t.getCause();
+        }
         return buildResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Internal server error");
     }
 

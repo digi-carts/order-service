@@ -4,21 +4,20 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 /**
- * Request/response DTO: Order Item Request.
+ * Request/response DTO: Checkout Item Request.
  */
-public class OrderItemRequest {
+public class CheckoutItemRequest {
 
     @NotBlank
     private String productId;
 
-    @NotBlank
     private String productName;
 
     @NotNull
     private Integer qty;
 
     @NotNull
-    private Double priceAtOrder;
+    private Double price;
 
     public String getProductId() { return productId; }
     public void setProductId(String productId) { this.productId = productId; }
@@ -26,6 +25,6 @@ public class OrderItemRequest {
     public void setProductName(String productName) { this.productName = productName; }
     public Integer getQty() { return qty; }
     public void setQty(Integer qty) { this.qty = qty; }
-    public Double getPriceAtOrder() { return priceAtOrder; }
-    public void setPriceAtOrder(Double priceAtOrder) { this.priceAtOrder = priceAtOrder; }
+    public Double getPrice() { return price; }
+    public void setPrice(Double price) { this.price = price; }
 }
