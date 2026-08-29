@@ -31,8 +31,9 @@ class OrderServiceTest {
 
     @Test
     void findByIdThrowsWhenMissing() {
-        when(orderRepository.findById("x")).thenReturn(Optional.empty());
-        assertThatThrownBy(() -> orderService.findById("x")).isInstanceOf(EntityNotFoundException.class);
+        when(orderRepository.findById(any(java.util.UUID.class))).thenReturn(Optional.empty());
+        assertThatThrownBy(() -> orderService.findById("00000000-0000-0000-0000-000000000000"))
+                .isInstanceOf(EntityNotFoundException.class);
     }
 
     @Test
