@@ -9,9 +9,10 @@ import org.springframework.stereotype.Repository;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.UUID;
 
 @Repository
-public interface OrderRepository extends JpaRepository<Order, String> {
+public interface OrderRepository extends JpaRepository<Order, UUID> {
 
     @Query("SELECT DISTINCT o FROM Order o LEFT JOIN FETCH o.items WHERE o.storeId = :storeId")
     List<Order> findByStoreId(@Param("storeId") String storeId);

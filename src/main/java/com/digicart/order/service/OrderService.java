@@ -17,6 +17,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * Application service implementing order use cases for <em>order-service</em>.
@@ -35,8 +36,12 @@ public class OrderService {
     }
 
     public Order findById(String id) {
-        return orderRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Order not found: " + id));
+        try {
+            return orderRepository.findById(UUID.fromString(id))
+                    .orElseThrow(() -> new EntityNotFoundException("Order not found: " + id));
+        } catch (IllegalArgumentException e) {
+            throw new EntityNotFoundException("Order not found: " + id);
+        }
     }
 
     public List<Order> findByStoreId(String storeId) {
@@ -108,7 +113,7 @@ public class OrderService {
 
     public void delete(String id) {
         findById(id);
-        orderRepository.deleteById(id);
+        orderRepository.deleteById(UUID.fromString(id));
     }
 
     public List<Map<String, Object>> getStatsByStore() {

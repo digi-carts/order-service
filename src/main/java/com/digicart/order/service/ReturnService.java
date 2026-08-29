@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Application service implementing return use cases for <em>order-service</em>.
@@ -35,8 +36,12 @@ public class ReturnService {
     }
 
     public Return findById(String id) {
-        return returnRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Return not found: " + id));
+        try {
+            return returnRepository.findById(UUID.fromString(id))
+                    .orElseThrow(() -> new EntityNotFoundException("Return not found: " + id));
+        } catch (IllegalArgumentException e) {
+            throw new EntityNotFoundException("Return not found: " + id);
+        }
     }
 
     public List<Return> findByStoreId(String storeId) {
@@ -48,12 +53,12 @@ public class ReturnService {
     }
 
     public List<Return> findByOrderId(String orderId) {
-        return returnRepository.findByOrder_Id(orderId);
+        return returnRepository.findByOrder_Id(UUID.fromString(orderId));
     }
 
     @Transactional
     public Return create(ReturnRequest req) {
-        Order order = orderRepository.findById(req.getOrderId())
+        Order order = orderRepository.findById(UUID.fromString(req.getOrderId()))
                 .orElseThrow(() -> new EntityNotFoundException("Order not found: " + req.getOrderId()));
 
         Return ret = new Return();
@@ -101,7 +106,7 @@ public class ReturnService {
 
     public void delete(String id) {
         findById(id);
-        returnRepository.deleteById(id);
+        returnRepository.deleteById(UUID.fromString(id));
     }
 
     @Transactional
@@ -129,7 +134,7 @@ public class ReturnService {
 
     @Transactional
     public Return createForOrder(String orderId, OrderReturnRequest req, String userId) {
-        Order order = orderRepository.findById(orderId)
+        Order order = orderRepository.findById(UUID.fromString(orderId))
                 .orElseThrow(() -> new EntityNotFoundException("Order not found: " + orderId));
 
         Return ret = new Return();

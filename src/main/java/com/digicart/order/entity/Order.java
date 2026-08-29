@@ -9,6 +9,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * JPA entity mapped in this service schema (Order).
@@ -20,7 +21,7 @@ public class Order {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private String id;
+    private UUID id;
 
     @Column(name = "store_id", nullable = false)
     private String storeId;
@@ -83,8 +84,8 @@ public class Order {
     @Column(name = "updated_at", nullable = false)
     private Instant updatedAt;
 
-    public String getId() { return id; }
-    public void setId(String id) { this.id = id; }
+    public UUID getId() { return id; }
+    public void setId(UUID id) { this.id = id; }
     public String getStoreId() { return storeId; }
     public void setStoreId(String storeId) { this.storeId = storeId; }
     public String getUserId() { return userId; }
