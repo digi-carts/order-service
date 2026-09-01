@@ -54,8 +54,12 @@ public class OrderController {
 
     @GetMapping("/analytics")
     public ResponseEntity<Map<String, Object>> getAnalytics(
+            @RequestHeader(value = "X-Store-Id", required = false) String storeId,
             @RequestParam(defaultValue = "30") int days) {
-        return ResponseEntity.ok(orderService.getAnalytics(days));
+        if (storeId == null || storeId.isBlank()) {
+            return ResponseEntity.badRequest().body(Map.of("error", "X-Store-Id header required"));
+        }
+        return ResponseEntity.ok(orderService.getAnalytics(storeId, days));
     }
 
     @GetMapping("/active-count")

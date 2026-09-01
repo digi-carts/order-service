@@ -126,21 +126,40 @@ public class OrderService {
         }).toList();
     }
 
-    public Map<String, Object> getAnalytics(int days) {
+    public Map<String, Object> getAnalytics(String storeId, int days) {
         Instant cutoff = Instant.now().minus(days, ChronoUnit.DAYS);
-        List<Object[]> results = orderRepository.getAnalytics(cutoff);
-        if (results.isEmpty() || results.get(0)[0] == null) {
-            return Map.of("totalOrders", 0, "totalRevenue", 0.0, "avgOrderValue", 0.0, "period", days + "d");
+
+        List<Object[]> totals = orderRepository.getAnalytics(storeId, cutoff);
+        long totalOrders = 0;
+        double totalRevenue = 0.0;
+        if (!totals.isEmpty() && totals.get(0)[0] != null) {
+            Object[] row = totals.get(0);
+            totalOrders = ((Number) row[0]).longValue();
+            totalRevenue = row[1] != null ? ((Number) row[1]).doubleValue() : 0.0;
         }
-        Object[] row = results.get(0);
-        long totalOrders = ((Number) row[0]).longValue();
-        double totalRevenue = row[1] != null ? ((Number) row[1]).doubleValue() : 0.0;
-        double avgOrderValue = row[2] != null ? ((Number) row[2]).doubleValue() : 0.0;
+
+        List<Map<String, Object>> ordersByDay = orderRepository.getOrdersByDay(storeId, cutoff).stream()
+            .map(r -> {
+                Map<String, Object> d = new LinkedHashMap<>();
+                d.put("date", r[0] != null ? r[0].toString() : "");
+                d.put("orders", r[1] != null ? ((Number) r[1]).longValue() : 0L);
+                d.put("revenue", r[2] != null ? ((Number) r[2]).doubleValue() : 0.0);
+                return d;
+            }).toList();
+
+        List<Map<String, Object>> topProducts = orderRepository.getTopProducts(storeId, cutoff).stream()
+            .map(r -> {
+                Map<String, Object> p = new LinkedHashMap<>();
+                p.put("name", r[0] != null ? r[0].toString() : "Unknown");
+                p.put("qty", r[1] != null ? ((Number) r[1]).longValue() : 0L);
+                return p;
+            }).toList();
+
         Map<String, Object> m = new LinkedHashMap<>();
         m.put("totalOrders", totalOrders);
         m.put("totalRevenue", totalRevenue);
-        m.put("avgOrderValue", avgOrderValue);
-        m.put("period", days + "d");
+        m.put("ordersByDay", ordersByDay);
+        m.put("topProducts", topProducts);
         return m;
     }
 
